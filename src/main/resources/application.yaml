@@ -1,0 +1,62 @@
+server:
+  port: ${APP_PORT}
+
+spring:
+  application:
+    name: meerkatgram-v2-scg
+    version: v1
+  web:
+    error:
+      include-stacktrace: always
+      include-message: always
+  cloud:
+    gateway:
+      server:
+        webflux:
+          default-filters:
+            - name: RequestSize
+              args:
+                maxSize: 20MB
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins: ${CORD_ALLOW_ORIGIN}
+                allowed-methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+                allowed-headers: "*"
+                allow-credentials: true
+          routes:
+            - id: ${AUTH_SERVICE_NAME}
+              uri: ${AUTH_SERVICE_URI}
+              predicates:
+                - Path=${AUTH_SERVICE_PREDICATE}
+
+            # Open API UI가 각 하위 서비스의 스펙을 Gateway가 origin으로 받아와서 출력하도록 설정
+            - id: ${AUTH_SERVICE_NAME}-docs
+              uri: ${AUTH_SERVICE_URI}
+              predicates:
+                - Path=/${AUTH_SERVICE_NAME}${AUTH_SERVICE_OPEN_API_PATH}
+              filters:
+                - RewritePath=/${AUTH_SERVICE_NAME}${AUTH_SERVICE_OPEN_API_PATH}, ${AUTH_SERVICE_OPEN_API_PATH}
+
+        # 위의 걸 좀 더 자세히 보여준 것
+#            - id: auth-service-docs
+#              uri: http://localhost:8081
+#              predicates:
+#                - path=/auth/service/api-docs
+#              filters:
+#                - Rewrite=/auth-service/api-docs, /api-docs
+                  # '/' 기준으로 왼쪽 걸 오른쪽으로 다시 씀
+# Open API
+springdoc:
+  swagger-ui:
+    path: /docs  # 게이트웨이의 라우터
+    urls:
+      - name: ${AUTH_SERVICE_NAME}
+        url: /${AUTH_SERVICE_NAME}${AUTH_SERVICE_OPEN_API_PATH}
+
+
+#jwt
+jwt:
+  header-key: Authorization
+  scheme: Bearer
+  secret: ${JWT_SECRET}
