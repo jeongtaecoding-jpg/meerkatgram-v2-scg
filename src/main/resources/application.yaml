@@ -20,9 +20,11 @@ spring:
           globalcors:
             cors-configurations:
               '[/**]':
-                allowed-origins: ${CORD_ALLOW_ORIGIN}
+                allowed-origins:
+                  - ${CORD_ALLOW_ORIGIN}
                 allowed-methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-                allowed-headers: "*"
+                allowed-headers:
+                    - "*"
                 allow-credentials: true
           routes:
             - id: ${AUTH_SERVICE_NAME}
