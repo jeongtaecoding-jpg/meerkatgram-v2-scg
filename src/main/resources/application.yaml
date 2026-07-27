@@ -21,7 +21,7 @@ spring:
             cors-configurations:
               '[/**]':
                 allowed-origins:
-                  - ${CORD_ALLOW_ORIGIN}
+                  - ${CORS_ALLOW_ORIGIN}
                 allowed-methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
                 allowed-headers:
                     - "*"
@@ -32,6 +32,11 @@ spring:
               predicates:
                 - Path=${AUTH_SERVICE_PREDICATE}
 
+            - id: ${POST_SERVICE_NAME}
+              uri: ${POST_SERVICE_URI}
+              predicates:
+                - Path=${POST_SERVICE_PREDICATE}
+
             # Open API UI가 각 하위 서비스의 스펙을 Gateway가 origin으로 받아와서 출력하도록 설정
             - id: ${AUTH_SERVICE_NAME}-docs
               uri: ${AUTH_SERVICE_URI}
@@ -39,6 +44,13 @@ spring:
                 - Path=/${AUTH_SERVICE_NAME}${AUTH_SERVICE_OPEN_API_PATH}
               filters:
                 - RewritePath=/${AUTH_SERVICE_NAME}${AUTH_SERVICE_OPEN_API_PATH}, ${AUTH_SERVICE_OPEN_API_PATH}
+
+            - id: ${POST_SERVICE_NAME}-docs
+              uri: ${POST_SERVICE_URI}
+              predicates:
+                - Path=/${POST_SERVICE_NAME}${POST_SERVICE_OPEN_API_PATH}
+              filters:
+                - RewritePath=/${POST_SERVICE_NAME}${POST_SERVICE_OPEN_API_PATH}, ${POST_SERVICE_OPEN_API_PATH}
 
         # 위의 걸 좀 더 자세히 보여준 것
 #            - id: auth-service-docs
@@ -56,6 +68,8 @@ springdoc:
       - name: ${AUTH_SERVICE_NAME}
         url: /${AUTH_SERVICE_NAME}${AUTH_SERVICE_OPEN_API_PATH}
 
+      - name: ${POST_SERVICE_NAME}
+        url: /${POST_SERVICE_NAME}${POST_SERVICE_OPEN_API_PATH}
 
 #jwt
 jwt:
