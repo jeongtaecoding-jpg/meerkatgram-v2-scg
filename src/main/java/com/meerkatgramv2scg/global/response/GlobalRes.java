@@ -21,18 +21,18 @@ public record GlobalRes<T>(
 
 
     public static <T> GlobalRes<T> success(T data) {
-        return GlobalRes.<T>from(CustomResponseCode.SUCCESS, data);
-        // return new GlobalRes<T>(CustomResponseCode.SUCCESS.getCode(), CustomResponseCode.SUCCESS.name(), data); 이걸 윗줄로 바꿀 수 있다.
+        return GlobalRes.<T>from(CustomResponseCode.SCG_SUCCESS, data);
+        // return new GlobalRes<T>(CustomResponseCode.SCG_SUCCESS.getCode(), CustomResponseCode.SCG_SUCCESS.name(), data); 이걸 윗줄로 바꿀 수 있다.
     }
 
       // data가 없는 success 패턴(GlobalRes)
     public static GlobalRes<Void> success() {
-        return GlobalRes.<Void>from(CustomResponseCode.SUCCESS);
+        return GlobalRes.<Void>from(CustomResponseCode.SCG_SUCCESS);
     }
 
       // data가 없는 success 패턴(ResponseEntity)
 //    public static ResponseEntity<GlobalRes<Void>> success() {
-//        return ResponseEntity.ok(new GlobalRes<Void>(CustomResponseCode.SUCCESS.getCode(), CustomResponseCode.SUCCESS.name(), null));
+//        return ResponseEntity.ok(new GlobalRes<Void>(CustomResponseCode.SCG_SUCCESS.getCode(), CustomResponseCode.SCG_SUCCESS.name(), null));
 //    }
 
 }
