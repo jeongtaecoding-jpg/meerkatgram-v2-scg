@@ -12,6 +12,8 @@ on:
 env:
   # ghcr.io에 올릴 이미지명 설정
   IMAGE_NAME: scg
+  # 매니페스트 작업 디렉토리
+  MANIFEST_WORK_DIR: manifests
   # 매니페스트를 올릴 대상 레포
   MANIFEST_REPO: jeongtaecoding-jpg/k8s-manifest
   # 해당 메니페스트 레파지토리의 경로
@@ -58,13 +60,20 @@ jobs:
         with:
           repository: ${{ env.MANIFEST_REPO }}              # pull 받을 대상 레포
           token: ${{ secrets.MANIFEST_REPO_TOKEN }}    # 현재 작업중인 레파지토리와 다르므로 별도로 생성한 매니페스트 레파지토리의 토큰을 세팅
-          path: manifests   # 레파지토리를 받아서 작업할 디렉토리 지정 
+          path: ${{ env.MANIFEST_WORK_DIR }}   # 레파지토리를 받아서 작업할 디렉토리 지정 
       - name: update image tag
+        # 위 build 스텝과 동일하게 이미지 경로 재조립
+        # k8s-manifest 안에서 이 서비스 폴더로 이동 (자기 폴더만 건드림)
+        # deployment.yaml 안의 image 태그 줄을 방금 push한 태그로 치환
+        # 커밋 작성자 이메일 (자유롭게 지정한 값)
+        # 커밋 작성자 이름
+        # 변경된 deployment.yaml 커밋 
+        # k8s-manifest 레포지토리에 push -> ArgoCD가 감지하고 자동 배포 진행
         run: |
           IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/$IMAGE_NAME
-          cd manifests/$MANIFEST_PATH
+          cd $MANIFEST_WORK_DIR/$MANIFEST_PATH
           sed -i "s|image: ${IMAGE}:.*|image: $IMAGE:$GITHUB_RUN_NUMBER|" deployment.yaml
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
           git commit -am "Deploy ${IMAGE_NAME}:${GITHUB_RUN_NUMBER}"
-          git push
+          git push  
