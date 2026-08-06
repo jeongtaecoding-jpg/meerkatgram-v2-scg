@@ -55,6 +55,7 @@ jobs:
           docker build -t $IMAGE:$GITHUB_RUN_NUMBER . 
           docker push $IMAGE:$GITHUB_RUN_NUMBER
     # TODO: 추후 k8s manifest 작성 시, 추가 작업 필요  (2026/08/06 작업 개시)
+    # 다른 레파지토리(k8s-manifests)를 추가로 내려받기 위해 Checkout
       - name: Checkout k8s-manifest
         uses: actions/checkout@v7
         with:
